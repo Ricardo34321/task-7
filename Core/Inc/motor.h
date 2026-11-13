@@ -2,30 +2,27 @@
 // Created by Ricardo on 2026/11/1.
 //
 
-
 #ifndef MOTOR_H
 #define MOTOR_H
 
 #include "main.h"
 
-#define MOTOR_CAN_ID     1
-#define MOTOR_CAN_RX_ID  0x205
-#define MOTOR_CAN_TX_ID  0x1FF
+#define MOTOR_CAN_ID    1
+#define MOTOR_CAN_RX_ID 0x205
+#define MOTOR_CAN_TX_ID 0x1FF
 
-
-void Motor_Init(void);
-void Motor_SendVoltage(int16_t voltage);
 typedef struct
 {
-    volatile uint16_t angle;
-    volatile int16_t  speed;
-    volatile int16_t  current;
-    volatile int16_t  temp;
+  volatile uint16_t angle;
+  volatile int16_t speed;
+  volatile int16_t current;
+  volatile int16_t temp;
 } Motor_Data;
 
 extern Motor_Data motor;
 extern uint32_t last_rx_time;
 
+void Motor_Init(void);
+void Motor_SendVoltage(int16_t voltage);
 
 #endif
-

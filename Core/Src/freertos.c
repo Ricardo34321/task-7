@@ -179,13 +179,11 @@ void StartMotorTask(void *argument)
 {
   /* USER CODE BEGIN StartMotorTask */
   /* Infinite loop */
-  for(;;)
+  for (;;)
   {
     float out = PID_Calc(&pid_speed, target_rpm, (float)motor.speed);
     Motor_SendVoltage((int16_t)out);
     osDelay(MOTOR_TASK_PERIOD_MS);
-
-
   }
   /* USER CODE END StartMotorTask */
 }
@@ -204,22 +202,22 @@ void StartCommTask(void *argument)
   static uint32_t last_print_time = 0;
   char buf[64];
   HAL_UARTEx_ReceiveToIdle_DMA(&huart6, rx_buf, sizeof(rx_buf));
-  for(;;)
+  for (;;)
   {
     if (rx_ready)
-  {
-    rx_ready = 0;
-    if (rx_len >= MOTOR_CMD_MIN_LEN && strncmp((char*)rx_buf, MOTOR_CMD_PREFIX, MOTOR_CMD_PREFIX_LEN) == 0)
     {
-      target_rpm = (float)atoi((char*)rx_buf + MOTOR_CMD_PREFIX_LEN);
+      rx_ready = 0;
+      if (rx_len >= MOTOR_CMD_MIN_LEN && strncmp((char *)rx_buf, MOTOR_CMD_PREFIX, MOTOR_CMD_PREFIX_LEN) == 0)
+      {
+        target_rpm = (float)atoi((char *)rx_buf + MOTOR_CMD_PREFIX_LEN);
+      }
     }
-  }
-    if (HAL_GetTick()-last_print_time > PRINT_PERIOD_MS) {
+
+    if (HAL_GetTick() - last_print_time > PRINT_PERIOD_MS)
+    {
       last_print_time = HAL_GetTick();
-      int n= sprintf(buf,"speed=%d rpm\r\n",motor.speed);
-      HAL_UART_Transmit(&huart6, (uint8_t*)buf, n, UART_TX_TIMEOUT_MS);
-
-
+      int n = sprintf(buf, "speed=%d rpm\r\n", motor.speed);
+      HAL_UART_Transmit(&huart6, (uint8_t *)buf, n, UART_TX_TIMEOUT_MS);
     }
 
     osDelay(COMM_TASK_PERIOD_MS);
@@ -244,26 +242,30 @@ void StartLedTask(void *argument)
   static uint32_t breath_val = 0;
   static int32_t breath_dir = BREATH_STEP;
 
-  for(;;)
+  for (;;)
   {
-    if (key_flag) {
+    if (key_flag)
+    {
       key_flag = 0;
-      if (HAL_GetTick()-last_key_tick > KEY_DEBOUNCE_MS) {
+      if (HAL_GetTick() - last_key_tick > KEY_DEBOUNCE_MS)
+      {
         last_key_tick = HAL_GetTick();
         if (servo_angle >= SERVO_RANGE_DEG) servo_dir = -SERVO_STEP_DEG;
-        if (servo_angle <= 0.0f)   servo_dir =  SERVO_STEP_DEG;
+        if (servo_angle <= 0.0f) servo_dir = SERVO_STEP_DEG;
 
         servo_angle += servo_dir;
 
         __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1,
                               (uint32_t)(SERVO_PULSE_MIN_US + servo_angle * SERVO_PULSE_SPAN_US / SERVO_RANGE_DEG));
       }
-    } if (HAL_GetTick() - last_rx_time > MOTOR_OFFLINE_MS)
+    }
+
+    if (HAL_GetTick() - last_rx_time > MOTOR_OFFLINE_MS)
     {
       __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_2, 0);
       breath_val += breath_dir;
       if (breath_val >= BREATH_MAX) breath_dir = -BREATH_STEP;
-      if (breath_val <= 0)    breath_dir =  BREATH_STEP;
+      if (breath_val <= 0) breath_dir = BREATH_STEP;
       __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_3, (uint32_t)breath_val);
     }
     else
