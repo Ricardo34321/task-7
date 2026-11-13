@@ -7,6 +7,11 @@
 uint32_t last_rx_time = 0;
 Motor_Data motor;
 
+/**
+  * @brief  启动 CAN1、配置验收滤波器并开启接收中断
+  * @param  None
+  * @retval None
+  */
 void Motor_Init(void)
 {
   HAL_CAN_Start(&hcan1);
@@ -28,6 +33,11 @@ void Motor_Init(void)
   HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
 }
 
+/**
+  * @brief  向 GM6020 发送一帧电压控制指令
+  * @param  voltage  电压指令值，范围 ±30000，对应 ±24V
+  * @retval None
+  */
 void Motor_SendVoltage(int16_t voltage)
 {
   CAN_TxHeaderTypeDef tx;
@@ -50,6 +60,11 @@ void Motor_SendVoltage(int16_t voltage)
   }
 }
 
+/**
+  * @brief  CAN1 接收中断回调，解析 GM6020 反馈帧并更新电机状态
+  * @param  hcan  CAN 句柄指针
+  * @retval None
+  */
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
   CAN_RxHeaderTypeDef rx;
