@@ -4,7 +4,7 @@
 #include "usart.h"
 #include <stdio.h>
 
-uint32_t lasttime=0;
+uint32_t last_rx_time=0;
 Motor_Data motor;
 
 
@@ -32,13 +32,13 @@ void Motor_Init(void) {
 
 
 }
-void Motor_Senddianya(int16_t dianya ) {
+void Motor_SendVoltage(int16_t voltage) {
     CAN_TxHeaderTypeDef tx;
     uint8_t data[8]={0};
     uint32_t mailbox = 0;
 
-    data[0]=(uint8_t)(dianya>>8);
-    data[1]=(uint8_t)(dianya&0xFF);
+    data[0]=(uint8_t)(voltage>>8);
+    data[1]=(uint8_t)(voltage&0xFF);
 
     
     tx.StdId = MOTOR_CAN_TX_ID;
@@ -73,6 +73,6 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
         motor.current=(int16_t)(data[4]<<8 | data[5]);
         motor.temp=data[6];
 
-      lasttime = HAL_GetTick();
+      last_rx_time = HAL_GetTick();
 
 }

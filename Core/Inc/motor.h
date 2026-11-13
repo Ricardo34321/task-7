@@ -14,7 +14,7 @@
 
 
 void Motor_Init(void);
-void Motor_Senddianya(int16_t dianya);
+void Motor_SendVoltage(int16_t voltage);
 typedef struct
 {
     volatile uint16_t angle;
@@ -24,7 +24,7 @@ typedef struct
 } Motor_Data;
 
 extern Motor_Data motor;
-extern uint32_t  lasttime ;
+extern uint32_t last_rx_time ;
 
 
 #endif

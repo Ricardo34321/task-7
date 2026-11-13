@@ -181,7 +181,7 @@ void StartMotorTask(void *argument)
   for(;;)
   {
     float out = PID_Calc(&pid_speed, target_rpm, (float)motor.speed);
-    Motor_Senddianya((int16_t)out);
+    Motor_SendVoltage((int16_t)out);
     osDelay(10);
 
 
@@ -257,7 +257,7 @@ void StartLedTask(void *argument)
         __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1,
                               (uint32_t)(500.0f + servo_angle * 2000.0f / 180.0f));
       }
-    } if (HAL_GetTick() - lasttime > 100)
+    } if (HAL_GetTick() - last_rx_time > 100)
     {
       __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_2, 0);
       breath_val += breath_dir;
