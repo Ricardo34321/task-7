@@ -34,7 +34,8 @@ enable_language(C ASM)
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
         Core/Inc/pid.h
-        Core/Src/pid.c)
+        Core/Src/pid.c
+        Core/Inc/config.h)
 
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)

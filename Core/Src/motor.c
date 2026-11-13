@@ -1,5 +1,6 @@
 
 #include "motor.h"
+#include "config.h"
 #include "can.h"
 #include "usart.h"
 #include <stdio.h>
@@ -13,7 +14,7 @@ void Motor_Init(void) {
     HAL_CAN_Start(&hcan1);
 
    CAN_FilterTypeDef filter;
-   filter.FilterBank = 0;
+   filter.FilterBank = MOTOR_CAN_FILTER_BANK;
    filter.FilterMode = CAN_FILTERMODE_IDMASK;
    filter.FilterScale = CAN_FILTERSCALE_32BIT;
    filter.FilterIdHigh = MOTOR_CAN_RX_ID<<5;

@@ -24,7 +24,7 @@ typedef struct
 } Motor_Data;
 
 extern Motor_Data motor;
-extern uint32_t last_rx_time ;
+extern uint32_t last_rx_time;
 
 
 #endif

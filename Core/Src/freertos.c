@@ -33,6 +33,7 @@
 #include <string.h>
 #include <tim.h>
 #include "motor.h"
+#include "config.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -182,7 +183,7 @@ void StartMotorTask(void *argument)
   {
     float out = PID_Calc(&pid_speed, target_rpm, (float)motor.speed);
     Motor_SendVoltage((int16_t)out);
-    osDelay(10);
+    osDelay(MOTOR_TASK_PERIOD_MS);
 
 
   }
@@ -208,20 +209,20 @@ void StartCommTask(void *argument)
     if (rx_ready)
   {
     rx_ready = 0;
-    if (rx_len >= 6 && strncmp((char*)rx_buf, "motor", 5) == 0)
+    if (rx_len >= MOTOR_CMD_MIN_LEN && strncmp((char*)rx_buf, MOTOR_CMD_PREFIX, MOTOR_CMD_PREFIX_LEN) == 0)
     {
-      target_rpm = (float)atoi((char*)rx_buf + 5);
+      target_rpm = (float)atoi((char*)rx_buf + MOTOR_CMD_PREFIX_LEN);
     }
   }
-    if (HAL_GetTick()-last_print_time > 2000) {
+    if (HAL_GetTick()-last_print_time > PRINT_PERIOD_MS) {
       last_print_time = HAL_GetTick();
       int n= sprintf(buf,"speed=%d rpm\r\n",motor.speed);
-      HAL_UART_Transmit(&huart6, (uint8_t*)buf, n, 100);
+      HAL_UART_Transmit(&huart6, (uint8_t*)buf, n, UART_TX_TIMEOUT_MS);
 
 
     }
 
-    osDelay(10);
+    osDelay(COMM_TASK_PERIOD_MS);
   }
   /* USER CODE END StartCommTask */
 }
@@ -239,41 +240,41 @@ void StartLedTask(void *argument)
   /* Infinite loop */
   static uint32_t last_key_tick = 0;
   static float servo_angle = 0.0f;
-  static float servo_dir   = 20.0f;
+  static float servo_dir   = SERVO_STEP_DEG;
   static uint32_t breath_val = 0;
-  static int32_t breath_dir = 10;
+  static int32_t breath_dir = BREATH_STEP;
 
   for(;;)
   {
     if (key_flag) {
       key_flag = 0;
-      if (HAL_GetTick()-last_key_tick > 200) {
+      if (HAL_GetTick()-last_key_tick > KEY_DEBOUNCE_MS) {
         last_key_tick = HAL_GetTick();
-        if (servo_angle >= 180.0f) servo_dir = -20.0f;
-        if (servo_angle <= 0.0f)   servo_dir =  20.0f;
+        if (servo_angle >= SERVO_RANGE_DEG) servo_dir = -SERVO_STEP_DEG;
+        if (servo_angle <= 0.0f)   servo_dir =  SERVO_STEP_DEG;
 
         servo_angle += servo_dir;
 
         __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1,
-                              (uint32_t)(500.0f + servo_angle * 2000.0f / 180.0f));
+                              (uint32_t)(SERVO_PULSE_MIN_US + servo_angle * SERVO_PULSE_SPAN_US / SERVO_RANGE_DEG));
       }
-    } if (HAL_GetTick() - last_rx_time > 100)
+    } if (HAL_GetTick() - last_rx_time > MOTOR_OFFLINE_MS)
     {
       __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_2, 0);
       breath_val += breath_dir;
-      if (breath_val >= 1000) breath_dir = -10;
-      if (breath_val <= 0)    breath_dir =  10;
+      if (breath_val >= BREATH_MAX) breath_dir = -BREATH_STEP;
+      if (breath_val <= 0)    breath_dir =  BREATH_STEP;
       __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_3, (uint32_t)breath_val);
     }
     else
     {
-      __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_2, 1000);
+      __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_2, BREATH_MAX);
       __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_3, 0);
       breath_val = 0;
-      breath_dir = 10;
+      breath_dir = BREATH_STEP;
     }
 
-    osDelay(10);
+    osDelay(LED_TASK_PERIOD_MS);
   }
   /* USER CODE END StartLedTask */
 }

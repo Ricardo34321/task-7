@@ -29,7 +29,8 @@
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include "motor.h"
-#include"pid.h"
+#include "pid.h"
+#include "config.h"
 
 /* USER CODE END Includes */
 
@@ -103,11 +104,11 @@ int main(void)
   MX_CAN1_Init();
   /* USER CODE BEGIN 2 */
   Motor_Init();
-  PID_Init(&pid_speed,50,0.7f,0.2f,25000.0f,28000.0f);
+  PID_Init(&pid_speed, SPEED_KP, SPEED_KI, SPEED_KD, SPEED_MAX_OUT, SPEED_MAX_INTEGRAL);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 500);
+  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, (uint32_t)SERVO_PULSE_MIN_US);
   HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_2);
-  __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_2, 1000);
+  __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_2, BREATH_MAX);
   HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_3);
   __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_3, 0);
   /* USER CODE END 2 */
