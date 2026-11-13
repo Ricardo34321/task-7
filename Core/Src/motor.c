@@ -1,8 +1,6 @@
 #include "motor.h"
 #include "config.h"
 #include "can.h"
-#include "usart.h"
-#include <stdio.h>
 
 uint32_t last_rx_time = 0;
 Motor_Data motor;

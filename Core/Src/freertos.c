@@ -25,13 +25,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "cmsis_os.h"
 #include "pid.h"
 #include <stdio.h>
 #include "usart.h"
 #include <stdlib.h>
 #include <string.h>
-#include <tim.h>
+#include "tim.h"
 #include "motor.h"
 #include "config.h"
 /* USER CODE END Includes */
