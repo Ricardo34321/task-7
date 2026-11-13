@@ -2,12 +2,9 @@
 // Created by Ricardo on 2026/11/1.
 //
 
-#ifndef HUXIDENG_MOTOR_H
-#define HUXIDENG_MOTOR_H
 
-#endif //HUXIDENG_MOTOR_H
-#ifndef __MOTOR_H
-#define __MOTOR_H
+#ifndef MOTOR_H
+#define MOTOR_H
 
 #include "main.h"
 
